@@ -139,10 +139,17 @@ function editorMapShow(places) {
 // ICON HELPER
 // ════════════════════════════════════════════
 const mCls = { see:'m-see', do:'m-do', eat:'m-eat', hotel:'m-hotel' };
+const markerIcons = {
+  see: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 18s5-4.9 5-9a5 5 0 1 0-10 0c0 4.1 5 9 5 9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="9" r="1.9" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',
+  do: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 15.5h12M6.5 15.5V7.3l3.5 2.2V7.3l3.5 2.2v6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 5.5V4h9v1.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  eat: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 3.5v5M8 3.5v5M7 3.5v12M12.5 3.5v6c0 1 .8 1.8 1.8 1.8h.2v4.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  hotel: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 15.5v-7h13v7M3.5 11.5h13M6 8.5V6.7c0-.7.6-1.2 1.2-1.2h1.6c.7 0 1.2.5 1.2 1.2v1.8M11 8.5V6.7c0-.7.6-1.2 1.2-1.2h1.6c.7 0 1.2.5 1.2 1.2v1.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+};
 function makeIcon(emoji, cat, size=32) {
   const cls = mCls[cat] || 'm-do';
+  const icon = markerIcons[cat] || markerIcons.do;
   const s = size, a = Math.round(s*1.37);
-  return L.divIcon({ html:`<div class="cm"><div class="mp ${cls}" style="width:${s}px;height:${s}px"><span class="em">${emoji}</span></div></div>`, className:'', iconSize:[s,a], iconAnchor:[s/2,a], popupAnchor:[0,-a] });
+  return L.divIcon({ html:`<div class="cm"><div class="mp ${cls}" style="width:${s}px;height:${s}px"><span class="em">${icon}</span></div></div>`, className:'', iconSize:[s,a], iconAnchor:[s/2,a], popupAnchor:[0,-a] });
 }
 
 // ════════════════════════════════════════════
@@ -578,12 +585,13 @@ function renderPlaces() {
 }
 function placeRowHTML(p) {
   const icon = placeListIcons[p.cat] || placeListIcons.do;
+  const location = formatPlaceLocation(p.addr);
   return `<div class="p-row" onclick="flyToPlace('${p.id}')">
     <span class="p-icon ${p.cat}" aria-hidden="true">${icon}</span>
     <div class="p-info">
       <div class="p-name">${esc(p.name)}</div>
       ${p.notes?`<div class="p-desc">${esc(p.notes)}</div>`:''}
-      ${p.addr?`<div class="p-addr">${esc(p.addr)}</div>`:''}
+      ${location?`<div class="p-addr">${esc(location)}</div>`:''}
     </div>
     <div class="p-acts" onclick="event.stopPropagation()">
       <button class="ic-btn" onclick="openPlaceEditor('${p.id}')" title="Edit" aria-label="Edit">
@@ -646,6 +654,23 @@ function renderTrips() {
 function uid() { return Math.random().toString(36).slice(2,10)+Date.now().toString(36); }
 function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function formatDate(d) { if(!d) return ''; try { return new Date(d+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); } catch(e){ return d; } }
+function formatPlaceLocation(addr) {
+  if (!addr) return '';
+  const parts = addr.split(',').map(x => x.trim()).filter(Boolean);
+  if (!parts.length) return '';
+  const country = cleanupLocationPart(parts[parts.length - 1]);
+  if (parts.length === 1) return country;
+  const locality = cleanupLocationPart(parts[parts.length - 2]);
+  return locality && locality !== country ? `${locality}, ${country}` : country;
+}
+function cleanupLocationPart(part) {
+  return (part || '')
+    .replace(/^\d+[A-Za-z-]*\s+/, '')
+    .replace(/\s+[A-Z]{1,3}\d[A-Z\d\s-]*$/i, '')
+    .replace(/\s+\d{3,}[A-Za-z-]*$/i, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
 
 // ════════════════════════════════════════════
 // INIT

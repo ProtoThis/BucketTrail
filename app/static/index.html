@@ -35,8 +35,10 @@
       <div class="search-wrap" id="places-sw">
         <div class="search-row">
           <div class="search-field">
-            <div class="s-icon">🔍</div>
-            <input class="search-in" id="p-search" type="text" placeholder="Search a place or address…" autocomplete="off"
+            <div class="s-icon" aria-hidden="true">
+              <svg viewBox="0 0 20 20"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12.5 12.5 17 17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+            <input class="search-in" id="p-search" type="text" placeholder="Search a place or address..." autocomplete="off"
               oninput="onPSearch()" onkeydown="if(event.key==='Enter')doPSearch(); if(event.key==='Escape')hideDrop('places-drop');">
           </div>
           <button class="search-go" onclick="doPSearch()">Search</button>
