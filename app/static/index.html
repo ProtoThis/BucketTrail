@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BucketTrail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>🗺 Bucket<em>Trail</em></h1>
+    <nav class="nav">
+      <button class="nav-btn active" id="nb-places" onclick="showView('places')">📍 Places</button>
+      <button class="nav-btn" id="nb-trips"  onclick="showView('trips')">🧳 Trips</button>
+    </nav>
+  </header>
+
+  <!-- ════ PLACES VIEW ════ -->
+  <div class="view active" id="v-places">
+    <div id="map-wrap">
+      <div id="map"></div>
+      <div class="fab" id="map-hint"><div class="dot"></div> Click map to drop a pin</div>
+      <div class="fab" id="pin-btn" onclick="togglePinMode()">📍 Drop a pin</div>
+    </div>
+    <div id="places-sidebar">
+      <div class="search-wrap" id="places-sw">
+        <div class="s-icon">🔍</div>
+        <div class="search-row">
+          <input class="search-in" id="p-search" type="text" placeholder="Search a place or address…" autocomplete="off"
+            oninput="onPSearch()" onkeydown="if(event.key==='Enter')doPSearch(); if(event.key==='Escape')hideDrop('places-drop');">
+          <button class="search-go" onclick="doPSearch()">Search</button>
+        </div>
+        <div class="drop" id="places-drop" style="display:none"></div>
+      </div>
+      <div class="scroll" id="places-list"></div>
+      <div class="pin-footer">
+        <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center" onclick="togglePinMode()">📍 Drop a pin manually on the map</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ TRIPS VIEW ════ -->
+  <div class="view" id="v-trips">
+    <div id="trips-main">
+      <div class="trips-bar">
+        <h2>Our trips</h2>
+        <button class="btn btn-primary btn-sm" style="margin-left:auto" onclick="openTripEditor(null)">＋ Plan a trip</button>
+      </div>
+      <div class="trips-scroll" id="trips-list"></div>
+    </div>
+    <div id="trips-map-panel">
+      <div id="trips-map-hd">📍 All pinned places</div>
+      <div id="trips-map"></div>
+    </div>
+  </div>
+
+  <!-- ════ EDITOR VIEW (places + trips) ════ -->
+  <div class="view" id="v-editor">
+    <div id="editor-form-wrap">
+      <div class="editor-bar">
+        <button class="back-btn" id="editor-back" onclick="closeEditor()">← Back</button>
+        <h2 id="editor-title">Edit</h2>
+        <button class="btn btn-primary btn-sm save-btn" id="editor-save-btn" onclick="editorSave()">Save</button>
+      </div>
+      <div class="editor-scroll" id="editor-scroll">
+        <!-- filled dynamically -->
+      </div>
+    </div>
+    <div id="editor-map-panel">
+      <div id="editor-map-hd">📍 Map</div>
+      <div id="editor-map"></div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
