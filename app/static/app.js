@@ -904,7 +904,10 @@ function saveTripFromEditor() {
   };
   if (editCtx.id) { const t = state.trips.find(x => x.id === editCtx.id); if (t) Object.assign(t, data); }
   else { state.trips.push({ id: uid(), done: false, doneDate: '', visited: {}, ...data }); }
-  save(); renderTrips(); refreshMainMarkers(); refreshTripsMapMarkers(); closeEditor();
+
+  const savedTrip = editCtx.id ? state.trips.find(x => x.id === editCtx.id) : state.trips[state.trips.length - 1];
+  const finish = () => { save(); renderTrips(); refreshMainMarkers(); refreshTripsMapMarkers(); closeEditor(); };
+  if (savedTrip) fetchTripImage(savedTrip).then(finish); else finish();
 }
 
 function deleteTrip(id) {
@@ -1038,6 +1041,7 @@ function renderTrips() {
         </div>
         <div class="t-thumb" aria-hidden="true">
           <div class="t-thumb-art ${cardClass}"></div>
+          ${t.imageUrl ? `<div class="t-thumb-img" style="background-image:url(${esc(t.imageUrl)})"></div>` : ''}
           <div class="t-thumb-label">${esc(thumbLabel)}</div>
         </div>
       </div>
@@ -1052,6 +1056,15 @@ function formatTripThumbLabel(trip, visitPlaces, hotelPlaces, manualHotels = [])
   if (manualHotels[0]?.location) return manualHotels[0].location;
   if (manualHotels[0]?.name) return manualHotels[0].name;
   return trip.type === 'overnight' ? 'Weekend escape' : 'Day adventure';
+}
+
+async function fetchTripImage(trip) {
+  const primaryId = trip.placeIds?.[0] || trip.hotelIds?.[0];
+  if (!primaryId) return;
+  const place = state.places.find(p => p.id === primaryId);
+  if (!place) return;
+  const q = encodeURIComponent(place.name + (place.addr ? ', ' + place.addr.split(',')[0] : ''));
+  trip.imageUrl = `https://picsum.photos/seed/${q}/400/300`;
 }
 
 function inferTripType(durationValue) {
