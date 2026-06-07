@@ -13,10 +13,14 @@
 <body>
 <div id="app">
   <header>
-    <h1>🗺 Bucket<em>Trail</em></h1>
+    <div class="brand">
+      <h1>🗺 Bucket<em>Trail</em></h1>
+    </div>
     <nav class="nav">
-      <button class="nav-btn active" id="nb-places" onclick="showView('places')">📍 Places</button>
-      <button class="nav-btn" id="nb-trips"  onclick="showView('trips')">🧳 Trips</button>
+      <div class="nav-segment">
+        <button class="nav-btn active" id="nb-places" onclick="showView('places')">📍 Places</button>
+        <button class="nav-btn" id="nb-trips"  onclick="showView('trips')">Plan</button>
+      </div>
     </nav>
   </header>
 
@@ -25,21 +29,23 @@
     <div id="map-wrap">
       <div id="map"></div>
       <div class="fab" id="map-hint"><div class="dot"></div> Click map to drop a pin</div>
-      <div class="fab" id="pin-btn" onclick="togglePinMode()">📍 Drop a pin</div>
+      <div class="fab" id="pin-btn" onclick="togglePinMode()" title="Drop a pin" aria-label="Drop a pin">📍</div>
     </div>
     <div id="places-sidebar">
       <div class="search-wrap" id="places-sw">
-        <div class="s-icon">🔍</div>
         <div class="search-row">
-          <input class="search-in" id="p-search" type="text" placeholder="Search a place or address…" autocomplete="off"
-            oninput="onPSearch()" onkeydown="if(event.key==='Enter')doPSearch(); if(event.key==='Escape')hideDrop('places-drop');">
+          <div class="search-field">
+            <div class="s-icon">🔍</div>
+            <input class="search-in" id="p-search" type="text" placeholder="Search a place or address…" autocomplete="off"
+              oninput="onPSearch()" onkeydown="if(event.key==='Enter')doPSearch(); if(event.key==='Escape')hideDrop('places-drop');">
+          </div>
           <button class="search-go" onclick="doPSearch()">Search</button>
         </div>
         <div class="drop" id="places-drop" style="display:none"></div>
       </div>
       <div class="scroll" id="places-list"></div>
       <div class="pin-footer">
-        <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center" onclick="togglePinMode()">📍 Drop a pin manually on the map</button>
+        <button class="btn btn-ghost btn-sm btn-full" onclick="togglePinMode()">📍 Drop a pin manually on the map</button>
       </div>
     </div>
   </div>
@@ -49,7 +55,7 @@
     <div id="trips-main">
       <div class="trips-bar">
         <h2>Our trips</h2>
-        <button class="btn btn-primary btn-sm" style="margin-left:auto" onclick="openTripEditor(null)">＋ Plan a trip</button>
+        <button class="btn btn-primary btn-sm trips-add-btn" onclick="openTripEditor(null)">＋ Plan a trip</button>
       </div>
       <div class="trips-scroll" id="trips-list"></div>
     </div>

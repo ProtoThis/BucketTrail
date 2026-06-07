@@ -157,7 +157,7 @@ function addMainMarker(p) {
   const tripNames = trips.map(t => esc(t.name)).join(', ');
   m.bindPopup(`<div class="pp-title">${p.emoji} ${esc(p.name)}</div>
     <div class="pp-sub">${safeAddr}${notesPreview?`<br>${notesPreview}`:''}</div>
-    ${trips.length?`<div style="margin-top:5px;font-size:12px;color:var(--pine)">🧳 ${tripNames}</div>`:''}
+    ${trips.length?`<div class="pp-tripline">🧳 ${tripNames}</div>`:''}
     <div class="pp-btns">
       <button class="pp-btn pri" onclick="map.closePopup();openPlaceEditor('${p.id}')">Edit</button>
       <button class="pp-btn" onclick="deletePlace('${p.id}')">Remove</button>
@@ -192,7 +192,9 @@ function togglePinMode() {
   const btn = document.getElementById('pin-btn');
   const hint = document.getElementById('map-hint');
   btn.classList.toggle('active', pinMode);
-  btn.textContent = pinMode ? '✕ Cancel pin' : '📍 Drop a pin';
+  btn.textContent = pinMode ? '✕' : '📍';
+  btn.title = pinMode ? 'Cancel pin' : 'Drop a pin';
+  btn.setAttribute('aria-label', pinMode ? 'Cancel pin' : 'Drop a pin');
   hint.style.display = pinMode ? 'flex' : 'none';
   map.getContainer().style.cursor = pinMode ? 'crosshair' : '';
 }
@@ -440,7 +442,7 @@ function openTripEditor(id) {
   const hotelPlaces = state.places.filter(p=>p.cat==='hotel');
 
   function pickerSection(label, places, selIds, nameAttr) {
-    if (!places.length) return `<div style="font-size:13px;color:var(--ink-soft);padding:10px 0">No ${label.toLowerCase()} pinned yet.</div>`;
+    if (!places.length) return `<div class="picker-empty">No ${label.toLowerCase()} pinned yet.</div>`;
     return `<div class="picker-grid">
       <div class="picker-cat-hd">${label}</div>
       ${places.map(p=>`
@@ -485,9 +487,9 @@ function openTripEditor(id) {
       <div class="field-hint">Pin hotels under Places → Hotel / sleep to make them appear here.</div>
     </div>
     ${t ? `<hr class="divider">
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <div class="trip-editor-actions">
         <button class="btn btn-done btn-sm" onclick="toggleTripDone('${t.id}')">${t.done?'↩ Mark as planned':'✓ Mark trip as done!'}</button>
-        ${t.done&&t.doneDate?`<span style="font-size:12px;color:var(--ink-soft)">Done ${formatDate(t.doneDate)}</span>`:''}
+        ${t.done&&t.doneDate?`<span class="trip-done-date">Done ${formatDate(t.doneDate)}</span>`:''}
       </div>
       <hr class="divider">
       <button class="btn btn-danger btn-sm" onclick="deleteTrip('${t.id}')">🗑 Delete this trip</button>` : ''}
@@ -543,10 +545,16 @@ function focusTripOnMap(id) {
 // RENDER PLACES
 // ════════════════════════════════════════════
 const catInfo = {
-  see:   { chip:'c-see',   label:'👁 See' },
-  do:    { chip:'c-do',    label:'🎠 Do' },
-  eat:   { chip:'c-eat',   label:'🍕 Eat & drink' },
-  hotel: { chip:'c-hotel', label:'🏨 Hotel / sleep' },
+  see:   { chip:'c-see',   label:'See', countLabel:'Places' },
+  do:    { chip:'c-do',    label:'Visit', countLabel:'Places' },
+  eat:   { chip:'c-eat',   label:'Eat', countLabel:'Places' },
+  hotel: { chip:'c-hotel', label:'Stay', countLabel:'Places' },
+};
+const placeListIcons = {
+  see: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 18s5-4.9 5-9a5 5 0 1 0-10 0c0 4.1 5 9 5 9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="9" r="1.9" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>',
+  do: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 15.5h12M6.5 15.5V7.3l3.5 2.2V7.3l3.5 2.2v6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 5.5V4h9v1.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  eat: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 3.5v5M8 3.5v5M7 3.5v12M12.5 3.5v6c0 1 .8 1.8 1.8 1.8h.2v4.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  hotel: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 15.5v-7h13v7M3.5 11.5h13M6 8.5V6.7c0-.7.6-1.2 1.2-1.2h1.6c.7 0 1.2.5 1.2 1.2v1.8M11 8.5V6.7c0-.7.6-1.2 1.2-1.2h1.6c.7 0 1.2.5 1.2 1.2v1.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
 };
 function renderPlaces() {
   const list = document.getElementById('places-list');
@@ -559,9 +567,9 @@ function renderPlaces() {
     if (!ps.length) return '';
     const ci = catInfo[cat] || catInfo.do;
     return `<div class="cat-sec">
-      <div class="cat-hd" onclick="toggleCat(this)">
-        <span class="chip ${ci.chip}">${ci.label}</span>
-        <span class="cat-count">${ps.length}</span>
+      <div class="cat-hd ${ci.chip}" onclick="toggleCat(this)">
+        <span class="cat-title">${ci.label}</span>
+        <span class="cat-count ${ci.chip}">${ps.length} ${ci.countLabel}</span>
         <span class="chev open">▾</span>
       </div>
       <div class="cat-items open">${ps.map(placeRowHTML).join('')}</div>
@@ -569,16 +577,21 @@ function renderPlaces() {
   }).join('');
 }
 function placeRowHTML(p) {
+  const icon = placeListIcons[p.cat] || placeListIcons.do;
   return `<div class="p-row" onclick="flyToPlace('${p.id}')">
-    <span class="p-emoji">${p.emoji}</span>
+    <span class="p-icon ${p.cat}" aria-hidden="true">${icon}</span>
     <div class="p-info">
       <div class="p-name">${esc(p.name)}</div>
       ${p.notes?`<div class="p-desc">${esc(p.notes)}</div>`:''}
-      ${p.addr?`<div class="p-addr">📍 ${esc(p.addr)}</div>`:''}
+      ${p.addr?`<div class="p-addr">${esc(p.addr)}</div>`:''}
     </div>
     <div class="p-acts" onclick="event.stopPropagation()">
-      <button class="ic-btn" onclick="openPlaceEditor('${p.id}')" title="Edit">✏️</button>
-      <button class="ic-btn del" onclick="deletePlace('${p.id}')" title="Remove">✕</button>
+      <button class="ic-btn" onclick="openPlaceEditor('${p.id}')" title="Edit" aria-label="Edit">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 13.8V16h2.2l7.1-7.1-2.2-2.2L4 13.8Zm8.2-8.2 2.2 2.2 1-1a1 1 0 0 0 0-1.4l-.8-.8a1 1 0 0 0-1.4 0l-1 1Z" fill="currentColor"/></svg>
+      </button>
+      <button class="ic-btn del" onclick="deletePlace('${p.id}')" title="Remove" aria-label="Remove">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5.5 6.5V15a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V6.5M4 5.5h12M7.5 5.5V4.4c0-.5.4-.9.9-.9h3.2c.5 0 .9.4.9.9v1.1M8 8.5V14M12 8.5V14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
     </div>
   </div>`;
 }
