@@ -999,6 +999,13 @@ header h1 em {
     linear-gradient(180deg, #5A606A 0%, #9399A3 100%);
 }
 
+.t-thumb-img {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+
 .t-thumb-art.day {
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0)) 0 0 / 100% 100%,
@@ -1169,7 +1176,7 @@ header h1 em {
 }
 
 .trip-place-row.hotel {
-  grid-template-columns: auto 1fr 220px auto;
+  grid-template-columns: auto 1fr 280px auto;
 }
 
 .trip-place-row.manual {
@@ -1275,7 +1282,20 @@ header h1 em {
 .trip-stay-dates {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 6px;
+  min-width: 0;
+}
+
+.stay-date-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #A3AEAF;
+  min-width: 0;
 }
 
 .trip-empty-state {

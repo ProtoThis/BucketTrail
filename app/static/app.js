@@ -477,7 +477,7 @@ function openTripEditor(id) {
     })),
   };
 
-  document.getElementById('editor-title').textContent = t ? 'Edit trip' : 'Plan an adventure';
+  document.getElementById('editor-title').textContent = t ? 'Edit adventure' : 'Plan an adventure';
   document.getElementById('editor-back').textContent = '← Adventures';
 
   const name = t ? t.name : '';
@@ -497,12 +497,15 @@ function openTripEditor(id) {
       <div class="row3 field">
         <div>
           <label class="fl">Target date</label>
-          <input type="date" id="ed-tdate" value="${date}">
+          <input type="date" id="ed-tdate" value="${date}" oninput="updateTripEndDate()">
         </div>
         <div>
           <label class="fl">Duration (days)</label>
-          <input type="number" id="ed-tduration" min="1" step="1" value="${esc(duration)}">
+          <input type="number" id="ed-tduration" min="1" step="1" value="${esc(duration)}" oninput="updateTripEndDate()">
         </div>
+      </div>
+      <div class="field" style="margin-top:-10px">
+        <span class="fl" style="text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink-mid)">End date: <strong id="ed-tend">${date ? formatEndDate(date, duration) : '—'}</strong></span>
       </div>
       <div class="field">
         <label class="fl">Notes</label>
@@ -1078,6 +1081,8 @@ function inferTripType(durationValue) {
 function uid() { return Math.random().toString(36).slice(2, 10) + Date.now().toString(36); }
 function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 function formatDate(d) { if (!d) return ''; try { return new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return d; } }
+function formatEndDate(start, days) { if (!start || !days) return '—'; try { const d = new Date(start + 'T12:00:00'); d.setDate(d.getDate() + Number(days) - 1); return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return '—'; } }
+function updateTripEndDate() { const el = document.getElementById('ed-tend'); if (!el) return; const d = document.getElementById('ed-tdate')?.value; const dur = document.getElementById('ed-tduration')?.value; el.textContent = formatEndDate(d, dur); }
 function formatPlaceLocation(addr) {
   if (!addr) return '';
   const parts = addr.split(',').map(x => x.trim()).filter(Boolean);
