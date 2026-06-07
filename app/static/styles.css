@@ -322,17 +322,20 @@ header h1 em {
 
 .search-go {
   font-family: var(--font-b);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
-  padding: 0 18px;
-  min-height: 48px;
-  border-radius: 12px;
-  border: 1px solid var(--pine);
-  background: linear-gradient(180deg, #3E9B45 0%, #2E7D32 100%);
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: 1px solid #0E7134;
+  background: linear-gradient(180deg, #14823C 0%, #0E7134 100%);
   color: white;
   cursor: pointer;
   white-space: nowrap;
-  transition: transform .15s, box-shadow .15s, filter .15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: transform .15s, box-shadow .15s, background .15s, border-color .15s;
 }
 
 .search-go:hover {
@@ -670,6 +673,8 @@ header h1 em {
 
 .trips-bar h2,
 .editor-bar h2 {
+  flex: 1;
+  text-align: center;
   font-family: var(--font-d);
   font-size: 1.4rem;
   font-weight: 600;
@@ -1592,6 +1597,7 @@ header h1 em {
 
 input[type=text],
 input[type=date],
+input[type=number],
 select,
 textarea {
   width: 100%;
@@ -1608,6 +1614,7 @@ textarea {
 
 input[type=text]:focus,
 input[type=date]:focus,
+input[type=number]:focus,
 select:focus,
 textarea:focus {
   border-color: #B9D7C8;

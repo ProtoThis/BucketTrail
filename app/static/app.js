@@ -354,7 +354,7 @@ function openPlaceEditor(id, lat, lng, prefillName, prefillAddr) {
   setEditorMode('place');
   setEditorMapLabel('');
   document.getElementById('editor-title').textContent = p ? 'Edit place' : 'Add a place';
-  document.getElementById('editor-back').textContent = `← ${lastMainView === 'trips' ? 'Trips' : 'Places'}`;
+  document.getElementById('editor-back').textContent = `← ${lastMainView === 'trips' ? 'Adventures' : 'Places'}`;
 
   document.getElementById('editor-scroll').innerHTML = `
     <div class="field">
@@ -477,8 +477,8 @@ function openTripEditor(id) {
     })),
   };
 
-  document.getElementById('editor-title').textContent = t ? 'Edit trip' : 'Plan a trip';
-  document.getElementById('editor-back').textContent = '← Trips';
+  document.getElementById('editor-title').textContent = t ? 'Edit trip' : 'Plan an adventure';
+  document.getElementById('editor-back').textContent = '← Adventures';
 
   const name = t ? t.name : '';
   const date = t ? (t.date || '') : '';
@@ -1004,7 +1004,7 @@ function renderTrips() {
   </button>`;
 
   if (!state.trips.length) {
-    list.innerHTML = `<div class="trips-stack">${createCard}<div class="empty trip-empty"><p>No trips planned yet. Pin some places first, then build your first adventure.</p></div></div>`;
+    list.innerHTML = `<div class="trips-stack">${createCard}<div class="empty trip-empty"><p>No adventures planned yet. Pin some places first, then build your first adventure.</p></div></div>`;
     return;
   }
 
