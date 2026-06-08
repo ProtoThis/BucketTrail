@@ -1102,9 +1102,41 @@ function cleanupLocationPart(part) {
 }
 
 // ════════════════════════════════════════════
+// THEME (dark mode)
+// ════════════════════════════════════════════
+function loadTheme() {
+  const saved = localStorage.getItem('buckettrail_theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const dark = saved ? saved === 'dark' : prefersDark;
+  const btn = document.getElementById('theme-toggle');
+  if (dark) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    if (btn) btn.textContent = '☀️';
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    if (btn) btn.textContent = '🌙';
+  }
+}
+function toggleTheme() {
+  const html = document.documentElement;
+  const btn = document.getElementById('theme-toggle');
+  const dark = html.getAttribute('data-theme') === 'dark';
+  if (dark) {
+    html.removeAttribute('data-theme');
+    localStorage.setItem('buckettrail_theme', 'light');
+    if (btn) btn.textContent = '🌙';
+  } else {
+    html.setAttribute('data-theme', 'dark');
+    localStorage.setItem('buckettrail_theme', 'dark');
+    if (btn) btn.textContent = '☀️';
+  }
+}
+
+// ════════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════════
 async function initApp() {
+  loadTheme();
   await load();
   renderPlaces();
   renderTrips();
